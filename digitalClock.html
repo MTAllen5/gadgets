@@ -1,0 +1,291 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<script src="http://code.jquery.com/jquery.js"></script>
+</head>
+
+<style>
+	*{ margin: 0; padding: 0}
+	body{
+		background-color: #DAE2E5;
+		font: 12px/1.2 Arial;
+	}
+	#wrap{
+		position: relative;
+		margin: 30px auto;
+		padding: 40px;
+		width: 370px;
+		background-color: #f3f3f3;
+	}
+	#wrap:after{
+		content: "";
+		display: block;
+		position: absolute;
+		left: 50%;
+		bottom: 0;
+		margin-left: -200px;
+		width: 400px;
+		height: 20px;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, .1);
+		border-radius: 100%;
+		z-index: -1;
+	}
+	#clock{
+		background-color: #ddd;
+		border-radius: 5px;
+		box-shadow: inset 0 1px 1px rgba(0, 0, 0, .1),
+					0 1px 0 rgba(255, 255, 255, .8);
+	}
+	#week{text-align: center;}
+	#week ul{ list-style: none;font-size: 0;}
+	#week li{ 
+		display: inline-block;
+		margin: 0 10px;
+		color: #273e38;
+		line-height: 36px;
+		font-size: 12px;
+		opacity: .2;
+	}
+	#time{ 
+		padding: 4px 0 11px;
+		text-align: center;
+	}
+	#hour, #minute, #second{
+		position: relative;
+		display: inline-block;
+	}
+	#hour, #minute{ margin-right: 10px;}
+	#hour:before, #hour:after,
+	#minute:before, #minute:after{
+		content: "";
+		position: absolute;
+		display: block;
+		width: 0;
+		height: 0;
+		border: 3px solid #273e38;
+	}
+	#hour:before, #minute:before{
+		top: 15px;
+		right: -9px;
+	}
+	#hour:after, #minute:after{
+		top: 35px;
+		right: -9px;
+	}
+	.bit{
+		position: relative;
+		float: left;
+		margin: 0 4px;
+		width: 28px;
+		height: 60px;
+	}
+	.led1, .led2, .led3, .led4, .led5, .led6, .led7{
+		position: absolute;
+		display: block;
+		background-color: #273e38;
+		border-color: #273e38;
+		opacity: 0;
+		transition: all .2s linear 0;
+	}
+	.led1, .led4, .led7{
+		width: 16px;
+		height: 5px;
+	}
+	.led2, .led3, .led5, .led6{
+		width: 5px;
+		height: 14px;
+	}
+	.led1{ top: 0;left: 6px;}
+	.led2{ top: 7px;left: 0;}
+	.led3{ top: 7px;left: 23px;}
+	.led4{ top: 24px;left: 6px;}
+	.led5{ top: 32px;left: 0;}
+	.led6{ top: 32px;left: 23px;}
+	.led7{ top: 48px;left: 6px;}
+	.led1:before, .led1:after,
+	.led2:before, .led2:after,
+	.led3:before, .led3:after,
+	.led4:before, .led4:after,
+	.led5:before, .led5:after,
+	.led6:before, .led6:after,
+	.led7:before, .led7:after{
+		content: "";
+		position: absolute;
+		display: block;
+		width: 0;
+		height: 0;
+		border: 5px solid transparent;
+	}
+	.led1:before{
+		top: 0;
+		left: -5px;
+		border-width: 0 5px 5px 0;
+		border-right-color: inherit;
+	}
+	.led2:before, .led5:before{
+		top: -5px;
+		left: 0;
+		border-width: 5px 0 0 5px;
+		border-left-color: inherit;
+	}
+	.led3:before, .led6:before{
+		top: -5px;
+		left: 0;
+		border-width: 5px 5px 0 0;
+		border-right-color: inherit;
+	}
+	.led4:before{
+		top: 0;
+		left: -4px;
+		border-width: 3px 4px 2px 0;
+		border-right-color: inherit;
+	}
+	.led7:before{
+		top: 0;
+		left: -5px;
+		border-width: 0 0 5px 5px;
+		border-bottom-color: inherit;
+	}
+	.led1:after{
+		top: 0;
+		right: -5px;
+		border-width: 0 0 5px 5px;
+		border-left-color: inherit;
+	}
+	.led2:after, .led5:after{
+		bottom: -5px;
+		left: 0;
+		border-width: 0 0 5px 5px;
+		border-left-color: inherit;
+	}
+	.led3:after, .led6:after{
+		bottom: -5px;
+		left: 0;
+		border-width: 0 5px 5px 0;
+		border-right-color: inherit;
+	}
+	.led4:after{
+		top: 0;
+		right: -4px;
+		border-width: 3px 0 2px 4px;
+		border-left-color: inherit;
+	}
+	.led7:after{
+		top: 0;
+		right: -5px;
+		border-width: 0 5px 5px 0;
+		border-bottom-color: inherit;
+	}
+</style>
+
+<body>
+	<div id="wrap">
+    	<div id="clock">
+        	<div id="week">
+            	<ul>
+                	<li>MON</li>
+                    <li>TUE</li>
+                    <li>WED</li>
+                    <li>THU</li>
+                    <li>FRI</li>
+                    <li>SAT</li>
+                    <li>SUN</li>
+                </ul>
+            </div>
+            <div id="time">
+            	<div id="hour">
+                	<div class="bit">
+                        <span class="led1"></span>
+                        <span class="led2"></span>
+                        <span class="led3"></span>
+                        <span class="led4"></span>
+                        <span class="led5"></span>
+                        <span class="led6"></span>
+                        <span class="led7"></span>
+                    </div>
+                    <div class="bit">
+                        <span class="led1"></span>
+                        <span class="led2"></span>
+                        <span class="led3"></span>
+                        <span class="led4"></span>
+                        <span class="led5"></span>
+                        <span class="led6"></span>
+                        <span class="led7"></span>
+                    </div>
+                </div>
+                <div id="minute">
+                	<div class="bit">
+                        <span class="led1"></span>
+                        <span class="led2"></span>
+                        <span class="led3"></span>
+                        <span class="led4"></span>
+                        <span class="led5"></span>
+                        <span class="led6"></span>
+                        <span class="led7"></span>
+                    </div>
+                    <div class="bit">
+                        <span class="led1"></span>
+                        <span class="led2"></span>
+                        <span class="led3"></span>
+                        <span class="led4"></span>
+                        <span class="led5"></span>
+                        <span class="led6"></span>
+                        <span class="led7"></span>
+                    </div>
+                </div>
+                <div id="second">
+                	<div class="bit">
+                        <span class="led1"></span>
+                        <span class="led2"></span>
+                        <span class="led3"></span>
+                        <span class="led4"></span>
+                        <span class="led5"></span>
+                        <span class="led6"></span>
+                        <span class="led7"></span>
+                    </div>
+                    <div class="bit">
+                        <span class="led1"></span>
+                        <span class="led2"></span>
+                        <span class="led3"></span>
+                        <span class="led4"></span>
+                        <span class="led5"></span>
+                        <span class="led6"></span>
+                        <span class="led7"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	<script>
+		$(function(){
+			var showLed = [
+				[1, 2, 3, 5, 6, 7],
+				[3, 6],
+				[1, 3, 4, 5, 7],
+				[1, 3, 4, 6, 7],
+				[2, 3, 4, 6],
+				[1, 2, 4, 6, 7],
+				[1, 2, 4, 5, 6, 7],
+				[1, 3, 6],
+				[1, 2, 3, 4, 5, 6, 7],
+				[1, 2, 3, 4, 6, 7]
+			];
+			function run(){
+				var curTime = new Date();
+				$("#week li").eq(curTime.getDay()-1).css("opacity",1);
+				var time = [curTime.getHours(), curTime.getMinutes(), curTime.getSeconds()];
+				$(".bit").each(function(index, element) {
+					var idx = (index%2 == 0? showLed[parseInt(time[parseInt(index/2)]/10)] : showLed[time[parseInt(index/2)]%10]);
+					$(this).find("span").css("opacity", 0);
+					for(var i = idx.length-1; i >= 0; i--){
+						$(this).find("span").eq(idx[i]-1).css("opacity", 1);
+					}
+				});
+			}
+			var t = setInterval(run, 1000);
+		});
+	</script>
+</body>
+</html>

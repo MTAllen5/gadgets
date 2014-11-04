@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" >
+<title></title>
+</head>
+<style>
+        *{ margin:0; padding:0;}
+        #box{ width:200px; height:300px; border:1px solid #666; position:absolute;}
+        #box h1{ font-size:14px; height:20px; line-height:20px; background:#CCC; cursor:move;}
+        #box .conter{ background:#fff; line-height:18px; font-size:12px; }
+</style>
+<body>
+<div id="box">
+        <h1 id="boxheader">标题点我拖我把</h1>
+    <div class="conter">
+            内容区域
+        企鹅群106726756 为前端发烧
+    </div>
+</div>
+<script>
+    function drag(obj,opt){
+                /*
+                        这里为什么要多此一举写一个返回出来的对象呢？
+                        简单说一下就是每一次调用方法都不是同一个对象。
+                */
+                return new dragFn(obj,opt);
+        };
+        function dragFn(obj,opt){
+                this.obj=document.getElementById(obj); //获取
+                this.setOpt(opt);
+                //alert(this.getIner().width);
+                this.center();
+                this.moves();
+        };
+        //处理参数
+        dragFn.prototype.setOpt=function(opt){
+                this.opts={
+                        width:'200',
+                        height:'300'
+                }
+                this.extend(this.opts,opt||{});
+        };
+        //处理参数
+        dragFn.prototype.extend=function(opts,opt){
+                for(var key in opt){
+                    opts[key]=opt[key];
+                }
+                return opts;
+        };
+        //拖拽的实现方法
+        dragFn.prototype.moves=function(){
+                var obj=this;
+                this.obj.onmousedown=function(e){
+                        //鼠标事件兼容性前面是w3c标准后面是IE
+                        var e= e|| window.event ;
+                        var This=this; //保存当前对象
+                        //记录当前点击时候的位置
+                        var Dx=e.clientX-This.offsetLeft; //点击鼠标和当前对象之间的距离
+                        var Dy=e.clientY-This.offsetTop;//点击鼠标和当前对象之间的距离
+                        document.onmousemove=function(e){
+                                var e= e|| window.event ;
+                                var left=e.clientX-Dx;
+                                var top=e.clientY-Dy;
+                                //这里的判断是防止拖出浏览器边界
+                                if(left<=0){
+                                        left=0;
+                                }
+                                if(left>=(obj.getIner().width-obj.opts.width)){
+                                        left=obj.getIner().width-obj.opts.width;
+                                }
+                                if(top<0){
+                                        top=0;
+                                }
+                                if(top>(obj.getIner().height-obj.opts.height)){
+                                        top=obj.getIner().height-obj.opts.height;
+                                }
+                                This.style.left=left+"px";
+                                This.style.top=top+"px";
+                        }
+                        //释放所有的事件，如果不写。自己测测就知道了
+                        document.onmouseup = function () {
+                                this.onmousemove = null; //
+                                this.onmouseup = null;
+                        }
+                        
+                }
+        };
+        //居中显示
+        dragFn.prototype.center=function(){
+                var top=(document.documentElement.clientHeight-this.opts.height)/2;
+                var left=(document.documentElement.clientWidth-this.opts.width)/2;
+                this.obj.style.top=top+"px";
+                this.obj.style.left=left+'px';
+        };
+        //跨浏览器获取视口大小
+        dragFn.prototype.getIner=function(){
+                if(typeof window.innerWidth!='undefined'){
+                        return {
+                                        width:window.innerWidth,
+                                        height:window.innerHeight
+                                }
+                }else{
+                        return {
+                                        width:document.documentElement.clientWidth,
+                                        height:document.documentElement.clientHeight
+                                }
+                }
+        };
+        drag("box");
+</script>
+</body>
+</html>
